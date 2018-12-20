@@ -7,7 +7,7 @@ import random
 
 import numpy as np
 import matplotlib
-matplotlib.use("TkAgg")
+# matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 
 
@@ -16,7 +16,6 @@ def cal_distence(points):
     for i in range(len(points) - 1):
         diff = points[i] - points[i + 1]
         distence = np.sqrt(np.sum(np.power(diff, 2)))
-        print type(distence)
         sum_distence += distence
     return sum_distence
 
@@ -47,11 +46,11 @@ def anneal(cost_func, disturbance_func, points, t_init=100, alpha=1, t_min=0.005
 
     while t > t_min:
         for _ in range(disturbance_num):
-            print "origin: %s" % str(origin_points)
+            # print "origin: %s" % str(origin_points)
             '''随机扰动disturbance_num次'''
             dist_cost, dist_points = disturbance_func(origin_points)
-            print "dist: %s, %s" % (str(dist_cost), str(dist_points))
-            print "min_cost: %s" % str(min_cost)
+            # print "dist: %s, %s" % (str(dist_cost), str(dist_points))
+            # print "min_cost: %s" % str(min_cost)
             delta_e = dist_cost - origin_cost
             if delta_e <= 0 or accept_by_chance(delta_e, t):
                 origin_points = dist_points
@@ -73,5 +72,4 @@ if __name__ == '__main__':
     print "cost_list:"
     print cost_list
     plt.plot(cost_list)
-    # plt.plot([i for i in range(len(cost_list))], cost_list)
     plt.show()
