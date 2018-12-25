@@ -5,24 +5,9 @@ import numpy as np
 from sklearn.cluster import KMeans, SpectralClustering, AffinityPropagation
 
 
-def cluster_by_kmeans(points, cluster_num=3):
-    clustering = KMeans(n_clusters=cluster_num)
-    clustering.fit(points)
-    labels = clustering.labels_
-    return labels
-
-
-def cluster_by_spectral(points, cluster_num=3):
-    clustering = SpectralClustering(n_clusters=cluster_num)
-    clustering.fit(points)
-    labels = clustering.labels_
-    return labels
-
-
-def cluster_by_affinity(points, **kwargs):
-    clustering = AffinityPropagation()
-    clustering.fit(points)
-    labels = clustering.labels_
+def get_labels(points, cluster):
+    cluster.fit(points)
+    labels = cluster.labels_
     return labels
 
 
@@ -36,6 +21,7 @@ def divide_points(points, labels):
     for k, v in label_dict.items():
         label_dict[k] = np.copy(points[v])
     return label_dict
+
 
 if __name__ == '__main__':
     data = np.random.rand(100, 2)

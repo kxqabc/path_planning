@@ -3,11 +3,13 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
+import sklearn.cluster as sc
 
-from utils.data_util import get_date_from_tsp
-from utils.plot_util import plot_2d_points, plot_path, plot_path_new
-from enlighten.annealing import anneal, euclidean_distance, swap, reverse, transpose
-from cluster.cluster import cluster_by_kmeans, divide_points
+from utils.data_util import get_date_from_tsp, get_opt_result
+from utils.plot_util import plot_2d_points, plot_path, colour, save
+from search_path.annealing import anneal
+from search_path.path_tools import euclidean_distance
+from cluster.cluster import divide_points, get_labels
 
 
 def test_anneal(points):
@@ -25,40 +27,46 @@ def test_anneal(points):
     return min_points
 
 
-def test_cluster(points):
-    labels = cluster_by_kmeans(points, cluster_num=3)
+def test_kmean_cluster(points, axes):
+    kmeans_cluster = sc.KMeans(n_clusters=2)
+    labels = get_labels(points, kmeans_cluster)
     label_dict = divide_points(points, labels)
-    plot_2d_points(points, labels=label_dict)
-    figure = plt.figure()
-    ax = figure.add_subplot(111)
-    dist_sum = 0.0
-    for index, divided_points in label_dict.items():
-        min_points, cost_list, intermediate_points = anneal(euclidean_distance, divided_points,
-                                                            disturbance_num=200,
-                                                            attenuation_rate=0.99)
-        dist_sum += cost_list.pop()
-        # print "len of cost list: %d" % len(cost_list)
-        # ax.plot(cost_list, color='red', linestyle='--')
-        plot_path_new(ax, min_points, index)
-    plt.rcParams['font.sans-serif'] = ['SimHei']
-    plt.title(u"聚类处理后的多艘无人船路径规划结果图")
-    plt.savefig('./pic/multi_path.png')
-    # print "sum distence: %.2f" % dist_sum
-    # min_points, cost_list, intermediate_points = anneal(euclidean_distance, points,
-    #                                                     disturbance_num=200,
-    #                                                     attenuation_rate=0.99)
-    # print "min distence: %.2f" % cost_list[-1]
-    # ax.plot(cost_list[:-50], color='blue', linestyle='--')
-    # plt.rcParams['font.sans-serif'] = ['SimHei']
-    # plt.title(u"非聚类(蓝)与聚类(红)处理后的收敛效果图")
-    # plt.savefig('./pic/static.png')
-    # plt.show()
+    for label, divided_points in label_dict.items():
+        plot_2d_points(divided_points, axes, color=colour(label), title=u"Kmeans")
+
+
+def test_meanshift_cluster(points, axes):
+    bandwidth = sc.estimate_bandwidth(points, n_samples=len(points), quantile=0.2)
+    print "bandwidth: %f" % bandwidth
+    meanshift_cluster = sc.MeanShift(bandwidth=bandwidth, seeds=np.asarray([[7000, 3000], [3000, 2000]]), bin_seeding=True)
+    labels = get_labels(points, meanshift_cluster)
+    label_dict = divide_points(points, labels)
+    for label, divided_points in label_dict.items():
+        plot_2d_points(divided_points, axes, color=colour(label), title=u"mean shift")
+    save('meanshift')
 
 
 if __name__ == '__main__':
-    points_info, points = get_date_from_tsp('./data', 'att48.tsp')
+    points_info, points = get_date_from_tsp('./data', 'att48.tsp', 3)
     # print points.shape
     # print points
     # print points_info
     # min_points = test_anneal(points)
     # test_cluster(points)
+
+    # index_info, index_array = get_opt_result('./data', 'att48.opt.tour', 1)
+    # index_array = np.reshape(index_array, index_array.shape[0])
+    # index_list = index_array.tolist()
+    # index_list = [int(index) - 1 for index in index_list[:-1]]
+    # print index_list
+    # plot_path(points[index_list, :], 'best')
+    # print points[index_list[1:13]]
+    # distence = euclidean_distance(points[index_list[2:19], :])
+    # print distence
+
+    figure = plt.figure()
+    axes1 = figure.add_subplot(211)
+    axes2 = figure.add_subplot(212)
+    test_kmean_cluster(points, axes1)
+    test_meanshift_cluster(points, axes2)
+    save("cluster")

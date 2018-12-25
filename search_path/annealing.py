@@ -10,18 +10,7 @@ import matplotlib
 # matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 
-
-def euclidean_distance(points):
-    sum_distence = 0.0
-    length = len(points)
-    for i in range(length):
-        if i == length - 1:
-            diff = points[i] - points[0]
-        else:
-            diff = points[i] - points[i + 1]
-        distence = np.sqrt(np.sum(np.power(diff, 2)))
-        sum_distence += distence
-    return sum_distence
+from path_tools import euclidean_distance
 
 
 def create_random_indexs(length, index_num):
