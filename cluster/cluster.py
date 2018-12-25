@@ -25,6 +25,18 @@ def cluster_by_affinity(points, **kwargs):
     labels = clustering.labels_
     return labels
 
+
+def divide_points(points, labels):
+    label_dict = dict()
+    for i, label in enumerate(labels):
+        if label in label_dict.keys():
+            label_dict[label].append(i)
+        else:
+            label_dict[label] = [i, ]
+    for k, v in label_dict.items():
+        label_dict[k] = np.copy(points[v])
+    return label_dict
+
 if __name__ == '__main__':
     data = np.random.rand(100, 2)
     print "shape: " + str(data.shape)
