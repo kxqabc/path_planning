@@ -4,15 +4,20 @@
 import os
 
 import numpy as np
+from openpyxl import Workbook
 
 TSP_TAG = ('NODE_COORD_SECTION', 'TOUR_SECTION')
 
 
-def get_date_from_tsp(path, file_name, data_dim):
+def joint(path, file_name):
     if path.endswith(os.sep):
         file_name = path + file_name
     else:
         file_name = os.sep.join((path, file_name))
+    return file_name
+
+def get_date_from_tsp(path, file_name, data_dim):
+    file_name = joint(path, file_name)
     info = dict()
     points = []
     with open(file_name, 'r') as f:
@@ -47,3 +52,13 @@ def parse_data_line(line, dim):
 
 def get_opt_result(path, file_name, data_dim):
     return get_date_from_tsp(path, file_name, data_dim)
+
+
+def save_excel(path, file_name, data):
+    file_name = joint(path, file_name)
+    work_book = Workbook()
+    sheet = work_book.create_sheet(title=u'第一张')
+    sheet['A1'] = u'第一个单元格'
+    sheet['A2'] = u'第二个单元格'
+    sheet.append()
+    work_book.save(file_name + '.xlsx')

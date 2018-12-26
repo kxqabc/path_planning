@@ -5,11 +5,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sklearn.cluster as sc
 
-from utils.data_util import get_date_from_tsp, get_opt_result
+from utils.data_util import get_date_from_tsp, save_excel
 from utils.plot_util import plot_2d_points, plot_path, colour, save
 from search_path.annealing import anneal
 from search_path.path_tools import euclidean_distance
 from cluster.cluster import divide_points, get_labels
+from test.statistics import cluster_performance, log_min_cost
 
 
 def test_anneal(points):
@@ -64,9 +65,14 @@ if __name__ == '__main__':
     # distence = euclidean_distance(points[index_list[2:19], :])
     # print distence
 
-    figure = plt.figure()
-    axes1 = figure.add_subplot(211)
-    axes2 = figure.add_subplot(212)
-    test_kmean_cluster(points, axes1)
-    test_meanshift_cluster(points, axes2)
-    save("cluster")
+    # figure = plt.figure()
+    # axes1 = figure.add_subplot(211)
+    # axes2 = figure.add_subplot(212)
+    # kmeans_cluster = sc.KMeans(n_clusters=2)
+    # anneal_kwargs = {
+    #     'disturbance_num': 200,
+    #     'attenuation_rate': 0.99,
+    # }
+    # result = cluster_performance(points, kmeans_cluster, anneal, **anneal_kwargs)
+    # log_min_cost(result)
+    save_excel('./data', 'demo')

@@ -10,7 +10,7 @@ import matplotlib
 # matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 
-from path_tools import euclidean_distance
+from path_tools import euclidean_distance, default_record
 
 
 def create_random_indexs(length, index_num):
@@ -77,16 +77,18 @@ def is_convergence(cost_list):
         return False
 
 
-def anneal(cost_func, points, t_init=100, t_min=0.005, disturbance_num=100, attenuation_rate=0.99):
+def anneal(points, cost_func=euclidean_distance, record_func=default_record, t_init=100, t_min=0.005, disturbance_num=100, attenuation_rate=0.99):
     t = float(t_init)
-    cost_list = []
+    result_dict = dict()
+
     origin_points = copy.deepcopy(points)
     origin_cost = cost_func(origin_points)
-    min_cost = origin_cost
+
     min_points = origin_points
-    i = 0
-    intermediate_points = dict()
-    intermediate_points[0] = np.copy(origin_points)
+    min_cost = origin_cost
+
+    cost_list = []
+    record_list = [(origin_cost, np.copy(origin_points)), ]
 
     while t > t_min and not is_convergence(cost_list):
         for _ in range(disturbance_num):
@@ -110,18 +112,14 @@ def anneal(cost_func, points, t_init=100, t_min=0.005, disturbance_num=100, atte
         # 温度下降
         t *= attenuation_rate
         cost_list.append(min_cost)
-        if i < 5 or i % 2 == 0:
-            intermediate_points[i] = np.copy(min_points)
-        i += 1
-    intermediate_points[i] = np.copy(min_points)
-    return min_points, cost_list, intermediate_points
+        index = len(cost_list) - 1
+        if record_func(index):
+            record_list.append((min_cost, np.copy(min_points)))
+    result_dict['min'] = (min_cost, np.copy(min_points))
+    result_dict['record'] = record_list
+    result_dict['cost_list'] = cost_list
+    return result_dict
 
 
 if __name__ == '__main__':
-    points = np.random.randint(1, 100, size=(15, 1, 2))
-    print points
-    min_points, cost_list = anneal(euclidean_distance, points, disturbance_num=20, attenuation_rate=0.9)
-    print "cost_list:"
-    print cost_list
-    plt.plot(cost_list)
-    plt.show()
+    pass

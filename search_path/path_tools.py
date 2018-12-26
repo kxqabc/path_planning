@@ -15,3 +15,9 @@ def euclidean_distance(points):
         distance = np.sqrt(np.sum(np.power(diff, 2)))
         sum_distance += distance
     return sum_distance
+
+
+def default_record(index):
+    if index % 10 == 0:
+        return True
+    return False
