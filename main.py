@@ -1,16 +1,19 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import matplotlib.pyplot as plt
+import os
+
 import numpy as np
 import sklearn.cluster as sc
+import matplotlib.pyplot as plt
 
+import config
 from utils.data_util import get_date_from_tsp, save_excel
 from utils.plot_util import plot_2d_points, plot_path, colour, save
 from search_path.annealing import anneal
 from search_path.path_tools import euclidean_distance
 from cluster.cluster import divide_points, get_labels
-from test.statistics import cluster_performance, log_min_cost
+from test.statistics import kmeans_performance
 from item.statistics_item import ClustersPerformanceItem
 
 
@@ -49,7 +52,7 @@ def test_meanshift_cluster(points, axes):
 
 
 if __name__ == '__main__':
-    points_info, points = get_date_from_tsp('./data', 'att48.tsp', 3)
+    points_info, points = get_date_from_tsp(config.DATA_PATH, 'att48.tsp', 3)
     # print points.shape
     # print points
     # print points_info
@@ -69,14 +72,6 @@ if __name__ == '__main__':
     # figure = plt.figure()
     # axes1 = figure.add_subplot(211)
     # axes2 = figure.add_subplot(212)
-    # kmeans_cluster = sc.KMeans(n_clusters=2)
-    # anneal_kwargs = {
-    #     'disturbance_num': 200,
-    #     'attenuation_rate': 0.99,
-    # }
-    # result = cluster_performance(points, kmeans_cluster, anneal, **anneal_kwargs)
-    # log_min_cost(result)
-    items = ClustersPerformanceItem()
-    items.cluster_name.data = "k means"
-    val_list = items.to_list()
-    print val_list
+    data_list = kmeans_performance(points, cluster_nums=6)
+    save_excel(config.DATA_PATH, 'kmeans_performance', data_list)
+    print data_list

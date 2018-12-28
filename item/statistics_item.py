@@ -1,31 +1,21 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import copy
-
-class ArrtWithIndex(object):
-    index = 0
-
-    def __init__(self, data=None):
-        self.data = data
-        self.index = ArrtWithIndex.index
-        ArrtWithIndex.index += 1
-
 
 class ClustersPerformanceItem(object):
-    def __init__(self):
-        self.cluster_name = ArrtWithIndex()
-        self.n_cluster = ArrtWithIndex()
-        self.distance = ArrtWithIndex()
-        self.distances = ArrtWithIndex()
-        self.avg_distance = ArrtWithIndex()
-        self.variance = ArrtWithIndex()
-        self.max = ArrtWithIndex()
-        self.min = ArrtWithIndex()
+    def __init__(self, cluster_name=None, n_cluster=None, distance=None,
+                 distances=None, avg_distance=None, variance=None, max=None, min=None):
+        self.cluster_name = cluster_name
+        self.n_cluster = n_cluster
+        self.distance = distance
+        self.distances = distances
+        self.avg_distance = avg_distance
+        self.variance = variance
+        self.max = max
+        self.min = min
 
-    def to_list(self):
-        val_list = ["" for _ in range(len(self.__dict__))]
-        for key, val in self.__dict__.items():
-            index = val.index
-            val_list[index] = val.data
-        return val_list
+    def to_str_list(self):
+        attr_list = [self.cluster_name, self.n_cluster, self.distance,
+                     self.distances, self.avg_distance, self.variance,
+                     self.max, self.min]
+        return [str(attr) for attr in attr_list]

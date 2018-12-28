@@ -4,7 +4,7 @@
 import os
 
 import numpy as np
-from openpyxl import Workbook
+from openpyxl import Workbook, load_workbook
 
 TSP_TAG = ('NODE_COORD_SECTION', 'TOUR_SECTION')
 
@@ -55,9 +55,12 @@ def get_opt_result(path, file_name, data_dim):
     return get_date_from_tsp(path, file_name, data_dim)
 
 
-def save_excel(path, file_name, dict_list, sheet_name=None):
+def save_excel(path, file_name, data_list, sheet_name=None):
     file_name = joint(path, file_name)
-    work_book = Workbook()
+    try:
+        work_book = load_workbook(file_name + '.xlsx')
+    except:
+        work_book = Workbook()
     # get sheet by name, get active sheet if sheet_name is None
     if sheet_name:
         if sheet_name in work_book.sheetnames:
@@ -67,7 +70,7 @@ def save_excel(path, file_name, dict_list, sheet_name=None):
     else:
         sheet = work_book.active
     # add data(dict format) to sheet
-    for data_dict in dict_list:
-        sheet.append(data_dict)
+    for data in data_list:
+        sheet.append(data)
     # save
     work_book.save(file_name + '.xlsx')

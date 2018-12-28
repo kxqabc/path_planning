@@ -6,9 +6,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sklearn.cluster as sc
 
-from cluster.cluster import get_labels, divide_points
 from search_path.annealing import anneal
-import search_path.path_tools
+from cluster.cluster import get_labels, divide_points
+from item.statistics_item import ClustersPerformanceItem
 
 
 def cluster_performance(points, cluster, search_func, **kwargs):
@@ -21,25 +21,32 @@ def cluster_performance(points, cluster, search_func, **kwargs):
     return result_dict
 
 
-def log_min_cost(result):
+def log_to_item(result, cluster_name='default'):
+    n_cluster = len(result)
     min_cost_list = []
     for label, result_dict in result.items():
         min_cost, _ = result_dict.get('min')
         min_cost_list.append(min_cost)
-        print "[result_info]: label%d cluster's min cost: %s" % (label, str(min_cost))
     min_cost_list = np.asarray(min_cost_list)
-    var = np.var(min_cost_list)
-    print "方差为：%f" % var
+    item = ClustersPerformanceItem(cluster_name, n_cluster, np.sum(min_cost_list),
+                                   min_cost_list, np.mean(min_cost_list), np.var(min_cost_list),
+                                   np.max(min_cost_list), np.min(min_cost_list))
+
+    return item
 
 
 def kmeans_performance(points, cluster_nums=1):
     if cluster_nums < 1:
         raise ValueError("cluster_nums is invalid!")
-    for i in range(1, cluster_nums):
+    data_list = []
+    for i in range(1, cluster_nums + 1):
         kmeans_cluster = sc.KMeans(n_clusters=i)
         search_kwargs = {
             'disturbance_num': 200,
             'attenuation_rate': 0.99,
         }
-        result = cluster_performance(points, kmeans_cluster, anneal, **search_kwargs)
-        log_min_cost(result)
+        result = cluster_performance(points, kmeans_cluster,
+                                     anneal, **search_kwargs)
+        item = log_to_item(result, cluster_name='Kmeans')
+        data_list.append(item.to_str_list())
+    return data_list
