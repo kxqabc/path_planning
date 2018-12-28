@@ -11,6 +11,7 @@ from search_path.annealing import anneal
 from search_path.path_tools import euclidean_distance
 from cluster.cluster import divide_points, get_labels
 from test.statistics import cluster_performance, log_min_cost
+from item.statistics_item import ClustersPerformanceItem
 
 
 def test_anneal(points):
@@ -75,4 +76,7 @@ if __name__ == '__main__':
     # }
     # result = cluster_performance(points, kmeans_cluster, anneal, **anneal_kwargs)
     # log_min_cost(result)
-    save_excel('./data', 'demo')
+    items = ClustersPerformanceItem()
+    items.cluster_name.data = "k means"
+    val_list = items.to_list()
+    print val_list

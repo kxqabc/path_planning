@@ -16,6 +16,7 @@ def joint(path, file_name):
         file_name = os.sep.join((path, file_name))
     return file_name
 
+
 def get_date_from_tsp(path, file_name, data_dim):
     file_name = joint(path, file_name)
     info = dict()
@@ -54,11 +55,19 @@ def get_opt_result(path, file_name, data_dim):
     return get_date_from_tsp(path, file_name, data_dim)
 
 
-def save_excel(path, file_name, data):
+def save_excel(path, file_name, dict_list, sheet_name=None):
     file_name = joint(path, file_name)
     work_book = Workbook()
-    sheet = work_book.create_sheet(title=u'第一张')
-    sheet['A1'] = u'第一个单元格'
-    sheet['A2'] = u'第二个单元格'
-    sheet.append()
+    # get sheet by name, get active sheet if sheet_name is None
+    if sheet_name:
+        if sheet_name in work_book.sheetnames:
+            sheet = work_book[sheet_name]
+        else:
+            sheet = work_book.create_sheet(title=sheet_name)
+    else:
+        sheet = work_book.active
+    # add data(dict format) to sheet
+    for data_dict in dict_list:
+        sheet.append(data_dict)
+    # save
     work_book.save(file_name + '.xlsx')
