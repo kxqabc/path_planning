@@ -19,3 +19,22 @@ class ClustersPerformanceItem(object):
                      self.distances, self.avg_distance, self.variance,
                      self.max, self.min]
         return [str(attr) for attr in attr_list]
+
+
+class ClusterItem(object):
+    def __init__(self, points, label, center):
+        self.points = points
+        self.label = label
+        self.center = center
+        self.min_path = None
+        self.min_distance = None
+
+    def __str__(self):
+        show = "**** ClusterItem str ****" + '\n'
+        show += "[points]: length=" + str(len(self.points)) + '\n' + str(self.points)
+        show += "[label]: " + str(self.label) + '\n'
+        show += "[center]: " + str(self.center) + '\n'
+        if self.min_distance:
+            show += "[min_distance]: " + str(self.min_distance) + '\n'
+        return show
+

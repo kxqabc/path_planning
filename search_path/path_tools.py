@@ -21,3 +21,4 @@ def default_record(index):
     if index % 10 == 0:
         return True
     return False
+

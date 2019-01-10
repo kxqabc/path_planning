@@ -3,15 +3,22 @@
 
 import numpy as np
 from sklearn.cluster import KMeans, SpectralClustering, AffinityPropagation
+from item.entity import ClusterItem
 
 
-def get_labels(points, cluster):
+def get_cluster_result(points, cluster):
     cluster.fit(points)
     labels = cluster.labels_
-    return labels
+    centers = cluster.cluster_centers_
+    result_dict = {
+        'labels': labels,
+        'centers': centers
+    }
+    return result_dict
 
 
-def divide_points(points, labels):
+def divide_points(points, labels, centers):
+    clusters = []
     label_dict = dict()
     for i, label in enumerate(labels):
         if label in label_dict.keys():
@@ -19,8 +26,15 @@ def divide_points(points, labels):
         else:
             label_dict[label] = [i, ]
     for k, v in label_dict.items():
-        label_dict[k] = np.copy(points[v])
-    return label_dict
+        cluster = ClusterItem(np.copy(points[v]), k, centers[k])
+        clusters.append(cluster)
+    return clusters
+
+
+def get_point_clusters(points, cluster):
+    result_dict = get_cluster_result(points, cluster)
+    point_clusters = divide_points(points, result_dict['labels'], result_dict['centers'])
+    return point_clusters
 
 
 if __name__ == '__main__':

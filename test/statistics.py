@@ -7,13 +7,14 @@ import numpy as np
 import sklearn.cluster as sc
 
 from search_path.annealing import anneal
-from cluster.cluster import get_labels, divide_points
-from item.statistics_item import ClustersPerformanceItem
+from cluster.cluster import get_cluster_result, divide_points
+from item.entity import ClustersPerformanceItem
 
 
 def cluster_performance(points, cluster, search_func, **kwargs):
     result_dict = dict()
-    labels = get_labels(points, cluster)
+    cluster_res_dict = get_cluster_result(points, cluster)
+    labels = cluster_res_dict['labels']
     divided_dict = divide_points(points, labels)
     for label, divided_point in divided_dict.items():
         search_result = search_func(divided_point, **kwargs)
