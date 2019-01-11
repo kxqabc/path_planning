@@ -28,6 +28,8 @@ class ClusterItem(object):
         self.center = center
         self.min_path = None
         self.min_distance = None
+        self.liquid_num = 0
+        self.liquid_points = None
 
     def __str__(self):
         show = "**** ClusterItem str ****" + '\n'

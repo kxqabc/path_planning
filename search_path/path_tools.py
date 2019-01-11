@@ -22,3 +22,14 @@ def default_record(index):
         return True
     return False
 
+
+def set_liquid_points(cluster_items):
+    sum_distance = 0.0
+    points_num = 0
+    for cluster_item in cluster_items:
+        sum_distance += cluster_item.min_distance
+        points_num += len(cluster_item.points)
+    avg_distance = sum_distance/len(cluster_items)
+    for cluster_item in cluster_items:
+        cluster_item.liquid_num = round(points_num * (cluster_item.min_distance - avg_distance) / sum_distance)
+    # for cluster_item in cluster_items:
